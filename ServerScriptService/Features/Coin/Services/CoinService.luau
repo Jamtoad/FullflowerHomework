@@ -52,14 +52,14 @@ Public Methods
 function CoinService:Get(
   Player : Player
 ) : number
-  return Player:GetAttribute(`Coins`)
+  return Player:GetAttribute("Coins")
 end
 
 function CoinService:Set(
   Player : Player,
   Amount : number
 ) : ()
-  Player:SetAttribute(`Coins`, Amount)
+  Player:SetAttribute("Coins", Amount)
 end
 
 function CoinService:Update(
@@ -82,4 +82,9 @@ function CoinService:Increment(
   self:Set(Player, (Coins + Delta))
 end
 
+--[[
+================================================================================
+Return
+================================================================================
+]]
 return CoinService
