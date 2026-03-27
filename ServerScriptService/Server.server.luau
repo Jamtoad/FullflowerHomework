@@ -10,7 +10,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 Packages
 ================================================================================
 ]]
-local Loader = require("./Core/Packages/Loader")
+local Loader = require("@game/ReplicatedStorage/Packages/Loader")
 
 --[[
 ================================================================================
