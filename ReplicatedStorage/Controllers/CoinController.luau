@@ -58,7 +58,7 @@ Observer.ObserveAttribute(
   ) : (() -> ())?
     if (typeof(Coins) ~= "number") then return nil end
 
-    AmountLabel.Text = tostring(Coins)
+    AmountLabel.Text = `${Coins}`
 
     return nil
   end

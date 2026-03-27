@@ -16,12 +16,12 @@ local Copy = require(script.Parent.copy)
 	local new = Shuffle(array) -- { 2, 3, 1 }
 	```
 ]=]
-local function shuffle<T>(array: { T }): { T }
-	local random = Random.new()
+local function shuffle<T>(array: { T }, random : Random?): { T }
+	local random = random or Random.new()
 	local result = Copy(array)
 
 	for index = #result, 1, -1 do
-		local randomIndex = random:NextInteger(1, index)
+    local randomIndex = random:NextInteger(1, index)
 		local temp = result[index]
 
 		result[index] = result[randomIndex]

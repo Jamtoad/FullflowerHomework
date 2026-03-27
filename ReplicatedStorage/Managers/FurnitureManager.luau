@@ -44,6 +44,8 @@ local Tag : "Furniture" = "Furniture"
 
 local Player = PlayersService.LocalPlayer :: Player
 
+local Assets = ReplicatedStorageService:WaitForChild("Assets")
+
 --[[
 ================================================================================
 Types
@@ -75,8 +77,17 @@ Observer.ObserveTag(
   function(
     Furniture : Model
   ) : (() -> ())?
+    local IsClean : boolean = Furniture:GetAttribute(`{Tag}IsClean`)
+    
     local Trash : Trash = Trash:Create()
-
+    
+    local StateGUI : BillboardGui = Trash:Add(Assets:WaitForChild("StateGUI"):Clone())
+    local TitleLabel = StateGUI:WaitForChild("Title") :: TextLabel
+    
+    TitleLabel.Text = `{if IsClean then "Clean" else "Dirty"}`
+    
+    StateGUI.Parent = Furniture
+    
     InteractableBehavior:Bind(Furniture, {})
     Trash:Add(
       function() : () -- This runs on cleanup very similar to Trove or Maid.

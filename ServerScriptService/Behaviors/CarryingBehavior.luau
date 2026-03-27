@@ -83,6 +83,11 @@ function CarryingBehavior:Unbind(
   Subject : Player
 ) : ()
   Subject:RemoveTag(Tag)
+  
+  local ItemReference = Subject:FindFirstChild(`{Tag}ItemReference`) :: ObjectValue?
+  if (not ItemReference) then return end
+  
+  ItemReference:Destroy()
 end
 
 --[[

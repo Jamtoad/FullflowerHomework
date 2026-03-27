@@ -59,19 +59,19 @@ local SellerConfiguration : SellerConfiguration = {
       function(
         Price : number
       ) : string
-        return `Now we're talking! Ill give you {Price} for that!`
+        return `Now we're talking! Ill give you ${Price} for that!`
       end,
       
       function(
         Price : number
       ) : string
-        return `You looking to make a deal? I'd say thats worth {Price}.`
+        return `You looking to make a deal? I'd say thats worth ${Price}.`
       end,
       
       function(
         Price : number
       ) : string
-        return `We've got the best prices in town! {Price} and you've got a deal!`
+        return `We've got the best prices in town! ${Price} and you've got a deal!`
       end,
     }
   }

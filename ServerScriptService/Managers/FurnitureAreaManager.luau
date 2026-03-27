@@ -41,6 +41,8 @@ Constants
 ]]
 local Tag : "FurnitureArea" = "FurnitureArea"
 
+local Random : Random = Random.new()
+
 --[[
 ================================================================================
 Types
@@ -75,16 +77,16 @@ Observer.ObserveTag(
   Tag,
   function(
     FurnitureArea : BasePart
-  ) : (() -> ())?    
+  ) : (() -> ())?
     local FurnitureIDs : {FurnitureID} = Sift.Dictionary.keys(FurnitureConfiguration) -- Grabs the keys from the configuration.
-    local RandomFurnitureID : FurnitureID = Sift.Array.shuffle(FurnitureIDs)[1] -- Grabs a random ID from the IDs.
-
-    local FurnitureAreaSize : Vector3 = (FurnitureArea.Size / 2)
+    local FurnitureAreaSize : Vector3 = (FurnitureArea.Size / 2.25) -- Just a little extra so we dont go right to the edge of the map.
     local FurnitureAreaPosition : Vector3 = FurnitureArea:GetPivot().Position
 
     local Trash : Trash = Trash:Create()
     
-    for _=  1, math.random(15, 30) do
+    for _=  1, math.random(20, 30) do
+      local RandomFurnitureID : FurnitureID = Sift.Array.shuffle(FurnitureIDs)[1] -- Grabs a random ID from the IDs.
+      
       local Furniture : Model = FurnitureManager:Create(
         WorkspaceService,
         {
