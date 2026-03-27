@@ -9,7 +9,7 @@ Furniture Configuration
 Types
 ================================================================================
 ]]
-local FurnitureTypes = require("../Types/FurnitureTypes")
+local FurnitureTypes = require("@game/ReplicatedStorage/Types/FurnitureTypes")
 
 type FurnitureID = FurnitureTypes.ID
 type FurnitureDefinition = FurnitureTypes.Definition

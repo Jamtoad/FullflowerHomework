@@ -17,23 +17,16 @@ local TweenService = game:GetService("TweenService")
 Managers
 ================================================================================
 ]]
-local ProximityPromptManager = require("../Managers/ProximityPromptManager")
+local ProximityPromptManager = require("@game/ReplicatedStorage/Managers/ProximityPromptManager")
 
 --[[
 ================================================================================
 Packages
 ================================================================================
 ]]
-local Sift = require("../Packages/Sift")
-local Trash = require("../Packages/Trash")
-local Observer = require("../Packages/Observer")
-
---[[
-================================================================================
-Utilities
-================================================================================
-]]
-local Instantiate = require("../Utilities/Instantiate")
+local Sift = require("@game/ReplicatedStorage/Packages/Sift")
+local Trash = require("@game/ReplicatedStorage/Packages/Trash")
+local Observer = require("@game/ReplicatedStorage/Packages/Observer")
 
 --[[
 ================================================================================

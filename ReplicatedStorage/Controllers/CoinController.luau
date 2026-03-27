@@ -9,7 +9,7 @@ Coin Controller
 Services
 ================================================================================
 ]]
-local PlayerService = game:GetService("Players")
+local PlayersService = game:GetService("Players")
 
 --[[
 ================================================================================
@@ -23,7 +23,7 @@ local Observer = require("@game/ReplicatedStorage/Packages/Observer")
 Constants
 ================================================================================
 ]]
-local Player = PlayerService.LocalPlayer :: Player
+local Player = PlayersService.LocalPlayer :: Player
 local PlayerGUI = Player:WaitForChild("PlayerGui") :: PlayerGui
 local HUD = PlayerGUI:WaitForChild("HUD") :: ScreenGui
 local CoinsContainer = HUD:WaitForChild("Coins") :: Frame

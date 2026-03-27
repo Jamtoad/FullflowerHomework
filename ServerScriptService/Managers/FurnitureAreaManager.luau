@@ -23,7 +23,7 @@ local FurnitureManager = require("./FurnitureManager")
 Configurations
 ================================================================================
 ]]
-local FurnitureConfiguration = require("../Configurations/FurnitureConfiguration")
+local FurnitureConfiguration = require("@game/ReplicatedStorage/Configurations/FurnitureConfiguration")
 
 --[[
 ================================================================================
@@ -46,7 +46,7 @@ local Tag : "FurnitureArea" = "FurnitureArea"
 Types
 ================================================================================
 ]]
-local FurnitureTypes = require("../Types/FurnitureTypes")
+local FurnitureTypes = require("@game/ReplicatedStorage/Types/FurnitureTypes")
 
 type FurnitureID = FurnitureTypes.ID
 

@@ -17,13 +17,15 @@ local Loader = require("@game/ReplicatedStorage/Packages/Loader")
 Constants
 ================================================================================
 ]]
-local Features = ReplicatedStorageService:WaitForChild("Features")
+local Managers = ReplicatedStorageService:WaitForChild("Managers")
+local Behaviors = ReplicatedStorageService:WaitForChild("Behaviors")
+local Controllers = ReplicatedStorageService:WaitForChild("Controllers")
 
 --[[
 ================================================================================
 Initialize
 ================================================================================
 ]]
-for _, Feature in Features:GetChildren() do
-  Loader:LoadDescendants(Feature)
-end
+Loader:LoadChildren(Controllers)
+Loader:LoadChildren(Managers)
+Loader:LoadChildren(Behaviors)
