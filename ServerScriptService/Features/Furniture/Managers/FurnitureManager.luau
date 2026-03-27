@@ -1,21 +1,15 @@
 --[[
 ================================================================================
-Coin Controller
+Furniture Manager
 ================================================================================
 ]]
-
---[[
-================================================================================
-Services
-================================================================================
-]]
-local PlayerService = game:GetService("Players")
 
 --[[
 ================================================================================
 Packages
 ================================================================================
 ]]
+local Trash = require("@game/ReplicatedStorage/Packages/Trash")
 local Observer = require("@game/ReplicatedStorage/Packages/Observer")
 
 --[[
@@ -23,50 +17,75 @@ local Observer = require("@game/ReplicatedStorage/Packages/Observer")
 Constants
 ================================================================================
 ]]
-local Player = PlayerService.LocalPlayer :: Player
-local PlayerGUI = Player:WaitForChild("PlayerGui") :: PlayerGui
-local HUD = PlayerGUI:WaitForChild("HUD") :: ScreenGui
-local CoinsContainer = HUD:WaitForChild("Coins") :: Frame
-local AmountLabel = CoinsContainer:WaitForChild("Amount") :: TextLabel
+local Tag : "Furniture" = "Furniture"
+
+local Assets = script.Parent.Parent:WaitForChild("Assets")
 
 --[[
 ================================================================================
 Types
 ================================================================================
 ]]
-type UpdateCallback = (Amount : number) -> number
+local FurnitureTypes = require("../Types/FurnitureTypes")
 
-export type CoinController = {}
+type FurnitureID = FurnitureTypes.ID
+
+type Trash = Trash.Trash
+
+type Properties = {
+  ["ID"] : FurnitureID,
+  ["Origin"] : CFrame
+}
+
+export type FurnitureManager = {
+  -- Properties
+  ["Tag"] : typeof(Tag),
+
+  -- Public Methods
+  ["Create"] : (
+    self : FurnitureManager,
+    Parent : Instance,
+    Properties : Properties
+  ) -> Model
+}
 
 --[[
 ================================================================================
 Root
 ================================================================================
 ]]
-local CoinController : CoinController = {} :: CoinController
+local FurnitureManager : FurnitureManager = {
+  ["Tag"] = Tag,
+} :: FurnitureManager
 
 --[[
 ================================================================================
-Initialize
+Public Methods
 ================================================================================
 ]]
-Observer.ObserveAttribute(
-  Player,
-  "Coins",
-  function(
-    Coins : any
-  ) : (() -> ())?
-    if (typeof(Coins) ~= "number") then return nil end
+function FurnitureManager:Create(
+  Parent : Instance,
+  Properties : Properties
+) : Model
+  local ID : FurnitureID = Properties.ID
+  local Origin : CFrame = Properties.Origin
 
-    AmountLabel.Text = tostring(Coins)
+  local Furniture : Model = Assets:WaitForChild(ID):Clone()
 
-    return nil
-  end
-)
+  Furniture:SetAttribute(`{Tag}ID`, ID)
+
+  Furniture:PivotTo(Origin)
+
+  Furniture.Parent = Parent
+
+  Furniture:AddTag(Tag)
+
+  return Furniture
+end
 
 --[[
 ================================================================================
 Return
 ================================================================================
 ]]
-return CoinController
+return FurnitureManager

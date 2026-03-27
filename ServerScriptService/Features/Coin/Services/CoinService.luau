@@ -12,7 +12,7 @@ Types
 type UpdateCallback = (Amount : number) -> number
 
 export type CoinService = {
-  -- Methods
+  -- Public Methods
   ["Get"] : (
     self : CoinService,
     Player : Player
