@@ -51,9 +51,9 @@ Observer.ObserveTag(
     Furniture : Model
   ) : (() -> ())?
     local Trash : Trash = Trash:Create()
-    
-    
-    
+
+
+
     return function() : ()
       Trash:Destroy()
     end
