@@ -1,6 +1,6 @@
 --[[
 ================================================================================
-Furniture Manager
+Seller Manager
 ================================================================================
 ]]
 
@@ -9,6 +9,8 @@ Furniture Manager
 Services
 ================================================================================
 ]]
+local TweenService = game:GetService("TweenService")
+local DebrisService = game:GetService("Debris")
 local PlayersService = game:GetService("Players")
 local ReplicatedStorageService = game:GetService("ReplicatedStorage")
 
@@ -33,16 +35,20 @@ Remotes
 ================================================================================
 ]]
 local Remotes = ReplicatedStorageService:WaitForChild("Remotes")
-local AttemptToPickupFurniture = Remotes:WaitForChild("AttemptToPickupFurniture")
+local AttemptToSellFurniture = Remotes:WaitForChild("AttemptToSellFurniture")
 
 --[[
 ================================================================================
 Constants
 ================================================================================
 ]]
-local Tag : "Furniture" = "Furniture"
+local Tag : "Seller" = "Seller"
 
 local Player = PlayersService.LocalPlayer :: Player
+
+local Assets = ReplicatedStorageService:WaitForChild("Assets")
+
+local ResponseTweenTime : number = 2.5
 
 --[[
 ================================================================================
@@ -51,7 +57,7 @@ Types
 ]]
 type Trash = Trash.Trash
 
-export type FurnitureManager = {
+export type SellerManager = {
   -- Properties
   ["Tag"] : typeof(Tag),
 }
@@ -61,9 +67,9 @@ export type FurnitureManager = {
 Root
 ================================================================================
 ]]
-local FurnitureManager : FurnitureManager = {
+local SellerManager : SellerManager = {
   ["Tag"] = Tag,
-} :: FurnitureManager
+} :: SellerManager
 
 --[[
 ================================================================================
@@ -73,28 +79,56 @@ Initialize
 Observer.ObserveTag(
   Tag,
   function(
-    Furniture : Model
+    Seller : Model
   ) : (() -> ())?
     local Trash : Trash = Trash:Create()
 
-    InteractableBehavior:Bind(Furniture, {})
+    InteractableBehavior:Bind(Seller, {})
     Trash:Add(
       function() : () -- This runs on cleanup very similar to Trove or Maid.
-        InteractableBehavior:Unbind(Furniture) -- Cleans up actions as well!
+        InteractableBehavior:Unbind(Seller) -- Cleans up actions as well!
       end
     )
 
     InteractableBehavior:BindAction(
-      Furniture,
-      "Pickup",
+      Seller,
+      "Interact",
       function() : ()
-        local IsSuccessful : boolean = AttemptToPickupFurniture:InvokeServer(Furniture)
-        if (not IsSuccessful) then return end
-
-        InteractableBehavior:UnbindAction(Furniture, "Pickup")
+        local IsSuccessful : boolean, Response : string? = AttemptToSellFurniture:InvokeServer(Seller) -- TODO | Could make result a specific type!
+        if ((not IsSuccessful) or (not Response)) then return end
+        
+        -- TODO | Could use a manager for all of this?
+        local ResponseGUI : BillboardGui = Trash:Add(Assets:WaitForChild("ResponseGUI"):Clone())      
+        local ContentContainer = ResponseGUI:WaitForChild("Content") :: CanvasGroup
+        local TitleLabel = ContentContainer:WaitForChild("Title") :: TextLabel
+        TitleLabel.Text = Response
+        
+        ResponseGUI.Parent = Seller
+        
+        Trash:Add(
+          TweenService:Create(
+            ResponseGUI,
+            TweenInfo.new(ResponseTweenTime, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
+            {
+              ["StudsOffsetWorldSpace"] = Vector3.new(0, 5, 0)
+            }
+          )
+        ):Play()
+        
+        Trash:Add(
+          TweenService:Create(
+            ContentContainer,
+            TweenInfo.new((ResponseTweenTime * .75), Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, (ResponseTweenTime * .25)),
+            {
+              ["GroupTransparency"] = 1
+            }
+          )
+        ):Play()
+        
+        DebrisService:AddItem(ResponseGUI, ResponseTweenTime)
       end,
       {
-        ["HoldDuration"] = 2
+        ["HoldDuration"] = 1
       }
     )
 
@@ -109,4 +143,4 @@ Observer.ObserveTag(
 Return
 ================================================================================
 ]]
-return FurnitureManager
+return SellerManager

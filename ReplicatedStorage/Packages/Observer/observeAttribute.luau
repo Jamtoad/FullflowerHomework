@@ -1,26 +1,26 @@
 --!strict
 
 export type AttributeValue =
-	| string
-	| boolean
-	| number
-	| UDim
-	| UDim2
-	| BrickColor
-	| Color3
-	| Vector2
-	| Vector3
-	| CFrame
-	| NumberSequence
-	| ColorSequence
-	| NumberRange
-	| Rect
-	| Font
+  | string
+| boolean
+| number
+| UDim
+| UDim2
+| BrickColor
+| Color3
+| Vector2
+| Vector3
+| CFrame
+| NumberSequence
+| ColorSequence
+| NumberRange
+| Rect
+| Font
 
 type Callback = (value: AttributeValue) -> (() -> ())?
 
 local function defaultGuard(_value: AttributeValue)
-	return true
+  return true
 end
 
 --[=[
@@ -61,63 +61,63 @@ end
 	```
 ]=]
 local function observeAttribute(
-	instance: Instance,
-	name: string,
-	callback: Callback,
-	guard: ((value: AttributeValue) -> boolean)?
+  instance: Instance,
+  name: string,
+  callback: Callback,
+  guard: ((value: AttributeValue) -> boolean)?
 ): () -> ()
-	local cleanFn: (() -> ())? = nil
+  local cleanFn: (() -> ())? = nil
 
-	local onAttrChangedConn: RBXScriptConnection
-	local changedId = 0
+  local onAttrChangedConn: RBXScriptConnection
+  local changedId = 0
 
-	local valueGuard: (value: AttributeValue) -> boolean = if guard ~= nil then guard else defaultGuard
+  local valueGuard: (value: AttributeValue) -> boolean = if guard ~= nil then guard else defaultGuard
 
-	local function onAttributeChanged()
-		if cleanFn ~= nil then
-			task.spawn(cleanFn)
-			cleanFn = nil
-		end
+  local function onAttributeChanged()
+    if cleanFn ~= nil then
+      task.spawn(cleanFn)
+      cleanFn = nil
+    end
 
-		changedId += 1
-		local id = changedId
+    changedId += 1
+    local id = changedId
 
-		local value = instance:GetAttribute(name) :: AttributeValue?
+    local value = instance:GetAttribute(name) :: AttributeValue?
 
-		if value ~= nil and valueGuard(value) then
-			task.spawn(function()
-				local clean = (callback :: any)(value)
-				if typeof(clean) == "function" then
-					if id == changedId and onAttrChangedConn.Connected then
-						cleanFn = clean
-					else
-						task.spawn(clean)
-					end
-				end
-			end)
-		end
-	end
+    if value ~= nil and valueGuard(value) then
+      task.spawn(function()
+        local clean = (callback :: any)(value)
+        if typeof(clean) == "function" then
+          if id == changedId and onAttrChangedConn.Connected then
+            cleanFn = clean
+          else
+            task.spawn(clean)
+          end
+        end
+      end)
+    end
+  end
 
-	-- Get changed values:
-	onAttrChangedConn = instance:GetAttributeChangedSignal(name):Connect(onAttributeChanged)
+  -- Get changed values:
+  onAttrChangedConn = instance:GetAttributeChangedSignal(name):Connect(onAttributeChanged)
 
-	-- Get initial value:
-	task.defer(function()
-		if not onAttrChangedConn.Connected then
-			return
-		end
+  -- Get initial value:
+  task.defer(function()
+    if not onAttrChangedConn.Connected then
+      return
+    end
 
-		onAttributeChanged()
-	end)
+    onAttributeChanged()
+  end)
 
-	-- Cleanup:
-	return function()
-		onAttrChangedConn:Disconnect()
-		if cleanFn ~= nil then
-			task.spawn(cleanFn)
-			cleanFn = nil
-		end
-	end
+  -- Cleanup:
+  return function()
+    onAttrChangedConn:Disconnect()
+    if cleanFn ~= nil then
+      task.spawn(cleanFn)
+      cleanFn = nil
+    end
+  end
 end
 
 return observeAttribute

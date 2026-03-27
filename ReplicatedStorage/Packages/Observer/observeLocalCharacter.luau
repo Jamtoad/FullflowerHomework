@@ -27,50 +27,50 @@ type Callback = (character: Model) -> (() -> ())?
 	```
 ]=]
 local function observeLocalCharacter(callback: Callback): () -> ()
-	assert(IS_CLIENT, "observeLocalCharacter can only be called from the client")
+  assert(IS_CLIENT, "observeLocalCharacter can only be called from the client")
 
-	local cleanup: (() -> ())? = nil
-	local subscribed = true
+  local cleanup: (() -> ())? = nil
+  local subscribed = true
 
-	local function onCharacterAdded(character: Model)
-		local cleanupFn: (() -> ())? = nil
+  local function onCharacterAdded(character: Model)
+    local cleanupFn: (() -> ())? = nil
 
-		local ancestryChangedConn: RBXScriptConnection
-		ancestryChangedConn = character.AncestryChanged:Connect(function(_, parent)
-			if parent == nil and ancestryChangedConn.Connected then
-				ancestryChangedConn:Disconnect()
-				if typeof(cleanupFn) == "function" and subscribed then
-					task.spawn(cleanupFn)
-					if cleanup == cleanupFn then
-						cleanup = nil
-					end
-				end
-			end
-		end)
+    local ancestryChangedConn: RBXScriptConnection
+    ancestryChangedConn = character.AncestryChanged:Connect(function(_, parent)
+      if parent == nil and ancestryChangedConn.Connected then
+        ancestryChangedConn:Disconnect()
+        if typeof(cleanupFn) == "function" and subscribed then
+          task.spawn(cleanupFn)
+          if cleanup == cleanupFn then
+            cleanup = nil
+          end
+        end
+      end
+    end)
 
-		cleanupFn = callback(character)
-		if typeof(cleanupFn) == "function" then
-			if ancestryChangedConn.Connected then
-				cleanup = cleanupFn
-			else
-				task.spawn(cleanupFn)
-			end
-		end
-	end
+    cleanupFn = callback(character)
+    if typeof(cleanupFn) == "function" then
+      if ancestryChangedConn.Connected then
+        cleanup = cleanupFn
+      else
+        task.spawn(cleanupFn)
+      end
+    end
+  end
 
-	local characterAddedConn = Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
-	if Players.LocalPlayer.Character ~= nil then
-		task.spawn(onCharacterAdded, Players.LocalPlayer.Character :: Model)
-	end
+  local characterAddedConn = Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+  if Players.LocalPlayer.Character ~= nil then
+    task.spawn(onCharacterAdded, Players.LocalPlayer.Character :: Model)
+  end
 
-	return function()
-		subscribed = false
-		characterAddedConn:Disconnect()
-		if typeof(cleanup) == "function" then
-			task.spawn(cleanup)
-			cleanup = nil
-		end
-	end
+  return function()
+    subscribed = false
+    characterAddedConn:Disconnect()
+    if typeof(cleanup) == "function" then
+      task.spawn(cleanup)
+      cleanup = nil
+    end
+  end
 end
 
 return observeLocalCharacter

@@ -19,53 +19,53 @@ type Callback<T> = (value: T) -> (() -> ())?
 	```
 ]=]
 local function observeProperty(instance: Instance, property: string, callback: Callback<unknown>): () -> ()
-	local cleanFn: (() -> ())? = nil
+  local cleanFn: (() -> ())? = nil
 
-	local propChangedConn: RBXScriptConnection
-	local changedId = 0
+  local propChangedConn: RBXScriptConnection
+  local changedId = 0
 
-	local function onPropertyChanged()
-		if cleanFn ~= nil then
-			task.spawn(cleanFn)
-			cleanFn = nil
-		end
+  local function onPropertyChanged()
+    if cleanFn ~= nil then
+      task.spawn(cleanFn)
+      cleanFn = nil
+    end
 
-		changedId += 1
-		local id = changedId
+    changedId += 1
+    local id = changedId
 
-		local value = (instance :: any)[property]
+    local value = (instance :: any)[property]
 
-		task.spawn(function()
-			local clean = (callback :: any)(value)
-			if typeof(clean) == "function" then
-				if id == changedId and propChangedConn.Connected then
-					cleanFn = clean
-				else
-					task.spawn(clean)
-				end
-			end
-		end)
-	end
+    task.spawn(function()
+      local clean = (callback :: any)(value)
+      if typeof(clean) == "function" then
+        if id == changedId and propChangedConn.Connected then
+          cleanFn = clean
+        else
+          task.spawn(clean)
+        end
+      end
+    end)
+  end
 
-	-- Get changed values:
-	propChangedConn = instance:GetPropertyChangedSignal(property):Connect(onPropertyChanged)
+  -- Get changed values:
+  propChangedConn = instance:GetPropertyChangedSignal(property):Connect(onPropertyChanged)
 
-	-- Get initial value:
-	task.defer(function()
-		if not propChangedConn.Connected then
-			return
-		end
-		onPropertyChanged()
-	end)
+  -- Get initial value:
+  task.defer(function()
+    if not propChangedConn.Connected then
+      return
+    end
+    onPropertyChanged()
+  end)
 
-	-- Cleanup:
-	return function()
-		propChangedConn:Disconnect()
-		if cleanFn ~= nil then
-			task.spawn(cleanFn)
-			cleanFn = nil
-		end
-	end
+  -- Cleanup:
+  return function()
+    propChangedConn:Disconnect()
+    if cleanFn ~= nil then
+      task.spawn(cleanFn)
+      cleanFn = nil
+    end
+  end
 end
 
 return observeProperty

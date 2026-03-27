@@ -20,11 +20,10 @@ local CarryingBehavior = require("@game/ServerScriptService/Behaviors/CarryingBe
 
 --[[
 ================================================================================
-Packages
+Configurations
 ================================================================================
 ]]
-local Trash = require("@game/ReplicatedStorage/Packages/Trash")
-local Observer = require("@game/ReplicatedStorage/Packages/Observer")
+local FurnitureConfiguration = require("@game/ReplicatedStorage/Configurations/FurnitureConfiguration")
 
 --[[
 ================================================================================
@@ -52,11 +51,11 @@ local FurnitureTypes = require("@game/ReplicatedStorage/Types/FurnitureTypes")
 
 type FurnitureID = FurnitureTypes.ID
 
-type Trash = Trash.Trash
-
 type Properties = {
   ["ID"] : FurnitureID,
-  ["Origin"] : CFrame
+  ["Origin"] : CFrame,
+  
+  ["IsClean"] : boolean?
 }
 
 export type FurnitureManager = {
@@ -68,7 +67,17 @@ export type FurnitureManager = {
     self : FurnitureManager,
     Parent : Instance,
     Properties : Properties
-  ) -> Model
+  ) -> Model,
+
+  ["IsClean"] : (
+    self : FurnitureManager,
+    Furniture : Model
+  ) -> boolean,
+
+  ["GetID"] : (
+    self : FurnitureManager,
+    Furniture : Model
+  ) -> FurnitureID
 }
 
 --[[
@@ -91,18 +100,40 @@ function FurnitureManager:Create(
 ) : Model
   local ID : FurnitureID = Properties.ID
   local Origin : CFrame = Properties.Origin
+  
+  local IsClean : boolean = if (Properties.IsClean == nil) then false else Properties.IsClean
 
   local Furniture = Assets:WaitForChild(ID):Clone() :: Model
 
   Furniture:SetAttribute(`{Tag}ID`, ID)
+  Furniture:SetAttribute(`{Tag}IsClean`, IsClean)
 
   Furniture:PivotTo(Origin)
+  
+  local TextureID : number = if IsClean
+    then FurnitureConfiguration[ID].CleanTextureID
+    else FurnitureConfiguration[ID].DirtyTextureID
+  
+  local FurnitureMesh = Furniture:FindFirstChildWhichIsA("MeshPart") :: MeshPart
+  FurnitureMesh.TextureID = `rbxassetid://{TextureID}`
 
   Furniture.Parent = Parent
 
   Furniture:AddTag(Tag)
 
   return Furniture
+end
+
+function FurnitureManager:IsClean(
+  Furniture : Model
+) : boolean
+  return Furniture:GetAttribute(`{Tag}IsClean`)
+end
+
+function FurnitureManager:GetID(
+  Furniture : Model
+) : boolean
+  return Furniture:GetAttribute(`{Tag}ID`)
 end
 
 --[[
