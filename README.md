@@ -22,3 +22,6 @@ Maybe another assumption might be that the Engineering team has experience using
 * I would love it if the NPC waved at you as you walked by.
 * Neat UI effects when you earned coins.
 * Expanding on the state machine with the NPC to include actual dialog and selectable options.
+
+### Notes
+* The CarryingBehavior and InteractableBehavior were grabbed from my code library. I wouldn't have had time to write them over again, but everything else outside of Packages was written from scratch for this!
