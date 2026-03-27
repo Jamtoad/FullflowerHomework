@@ -19,34 +19,16 @@ Constants
 ]]
 local Tag : "Furniture" = "Furniture"
 
-local Assets = script.Parent.Parent:WaitForChild("Assets")
-
 --[[
 ================================================================================
 Types
 ================================================================================
 ]]
-local FurnitureTypes = require("../Types/FurnitureTypes")
-
-type FurnitureID = FurnitureTypes.ID
-
 type Trash = Trash.Trash
-
-type Properties = {
-  ["ID"] : FurnitureID,
-  ["Origin"] : CFrame
-}
 
 export type FurnitureManager = {
   -- Properties
   ["Tag"] : typeof(Tag),
-
-  -- Public Methods
-  ["Create"] : (
-    self : FurnitureManager,
-    Parent : Instance,
-    Properties : Properties
-  ) -> Model
 }
 
 --[[
@@ -60,28 +42,23 @@ local FurnitureManager : FurnitureManager = {
 
 --[[
 ================================================================================
-Public Methods
+Initialize
 ================================================================================
 ]]
-function FurnitureManager:Create(
-  Parent : Instance,
-  Properties : Properties
-) : Model
-  local ID : FurnitureID = Properties.ID
-  local Origin : CFrame = Properties.Origin
-
-  local Furniture = Assets:WaitForChild(ID):Clone() :: Model
-
-  Furniture:SetAttribute(`{Tag}ID`, ID)
-
-  Furniture:PivotTo(Origin)
-
-  Furniture.Parent = Parent
-
-  Furniture:AddTag(Tag)
-
-  return Furniture
-end
+Observer.ObserveTag(
+  Tag,
+  function(
+    Furniture : Model
+  ) : (() -> ())?
+    local Trash : Trash = Trash:Create()
+    
+    
+    
+    return function() : ()
+      Trash:Destroy()
+    end
+  end
+)
 
 --[[
 ================================================================================

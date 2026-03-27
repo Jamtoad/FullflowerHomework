@@ -24,6 +24,6 @@ local Features = ServerScriptService:WaitForChild("Features")
 Initialize
 ================================================================================
 ]]
-for _, Feature in Features do
+for _, Feature in Features:GetChildren() do
   Loader:LoadDescendants(Feature)
 end
